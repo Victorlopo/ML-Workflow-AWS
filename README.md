@@ -26,3 +26,26 @@ Before deploying the model, we set up Amazon SageMaker's Model Monitor to track 
 ### Model Deployment
 
 The model is deployed on an `ml.m5.xlarge` instance. This instance type is chosen for its balance of compute, memory, and networking capabilities, suitable for most general-purpose workloads.
+
+## AWS Step Functions Workflow
+
+The machine learning workflow is orchestrated using AWS Step Functions, which coordinates three distinct Lambda functions to manage the end-to-end prediction process:
+
+### Step 1: Image Processing Lambda
+This function is responsible for preprocessing the batch of images to be analyzed. It prepares and serializes the images, ensuring they are in the correct format before sending them to the prediction model.
+
+### Step 2: Prediction Lambda
+After the images are processed, this Lambda function handles the prediction by invoking the SageMaker endpoint where the model is deployed. It sends the serialized images to the model and retrieves the prediction results.
+
+### Step 3: Threshold and Notification Lambda
+The final Lambda function in the workflow applies a predefined confidence threshold to the predictions. If the prediction confidence is below the threshold, it indicates a potentially unreliable prediction. In such cases:
+
+- The function constructs a JSON payload containing details of the images that did not meet the confidence threshold.
+- This payload is published to an SNS topic.
+- A notification, along with the details, is then automatically sent to the owner of the function via email, alerting them to the low-confidence predictions.
+
+### SNS Integration
+AWS Simple Notification Service (SNS) is used for notifying stakeholders. This setup ensures that any issues with prediction confidence are promptly communicated, allowing for quick action and oversight.
+
+This orchestrated workflow ensures a robust predictive system where each component is optimized for specific tasks, improving efficiency and maintaining high standards of predictive accuracy.
+
