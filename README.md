@@ -16,3 +16,13 @@ Furthermore, specific hyperparameters for the model training are set, such as th
 The input data for the model is organized into four specific channels—training data, validation data, and their respective image lists—and hosted on S3. The `TrainingInput` is used to specify the paths and content types of these data, facilitating SageMaker's access and loading of the data during training.
 
 Finally, the training process is initiated by calling the `fit` method of the model with the prepared input data. This process will train the model using the specified data and automatically save the trained model artifacts in the previously defined S3 location, enabling subsequent deployment and evaluation.
+
+## Model Deployment and Inference
+
+### Model Monitor Configuration
+
+Before deploying the model, we set up Amazon SageMaker's Model Monitor to track the deployment's performance. This involves capturing the input and output data for each prediction, which allows us to analyze the model's behavior over time. Data is captured at a rate of 100%, ensuring all inference data is logged, and stored in the specified S3 bucket under `Project_2_Extended/data_capture`.
+
+### Model Deployment
+
+The model is deployed on an `ml.m5.xlarge` instance. This instance type is chosen for its balance of compute, memory, and networking capabilities, suitable for most general-purpose workloads.
